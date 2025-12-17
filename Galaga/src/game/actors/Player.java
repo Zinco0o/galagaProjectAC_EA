@@ -1,11 +1,7 @@
 package game.actors;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.LinkedList;
-
 import engine.StdDraw;
-import game.Game;
+import java.util.ArrayList;
 
 /**
  * Classe représentant le jouuer.
@@ -32,8 +28,7 @@ public class Player extends Entity{
      * Dessine le joueur, ici c'est un rond rouge
      */
     public void draw() {
-        StdDraw.setPenColor(StdDraw.RED);
-        StdDraw.filledCircle(x, y, length / 2);
+        StdDraw.picture(this.x, this.y, "ressources/sprites/Ship.png", 0.05,0.05);
     }
 
     public ArrayList<Projectile> getLstProj(){
