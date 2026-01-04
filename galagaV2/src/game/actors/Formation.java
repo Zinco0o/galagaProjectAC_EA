@@ -5,22 +5,28 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import engine.StdDraw;
+import game.Game;
+
 
 public class Formation {
-    public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-    public double enemySpeed;
-    public String levelName;
-    public double cooldownAtt;
+    public ArrayList<Enemy> enemies = new ArrayList<Enemy>(); // Liste des ennemis dans la formation
+    public ArrayList<Enemy> enemiesAtt = new ArrayList<Enemy>(); // Liste des ennemis en attaque
+    public double enemySpeed; // Vitesse de déplacement de l'enemies
+    public double formationSpeed; // Vitesse de déplacement de la formation
+
+    public String levelName; // Nom du niveau chargé
+    public double cooldownAtt; //Le cooldown entre chaque attaque, si -1 pas d'attaque
     public int attaqueMouvement;
-    protected ArrayList<Projectile> LstProj = new ArrayList<>();
+    protected ArrayList<Projectile> LstProj = new ArrayList<>(); // Liste des projectiles tirés par la formation
     protected  long dernierTirTemps = 0;   // Stocke l'heure du dernier tir (en ms)
-    protected int cooldownTir;  // Le cooldown de 4000 ms
+    protected  long dernierAttTemps = 0;   // Stocke l'heure de la dernière attaque (en ms)
+    protected int cooldownTir;  // Le cooldown entre les tirs des ennemis (en ms)
 
 
-    private double offsetX = 0;
+    private double offsetX = 0; // Décalage horizontal appliqué à toute la formation
     private double direction = 1; // 1 = droite, -1 = gauche
-    private double vitesse = 0.002;
-    private double limiteSiderale = 0.08;
+    private double limiteSiderale = 0.08; // Limite de déplacement avant de changer de direction
 
     public void instantiateEnemy(String type, double x, double y, double length, int score, double speed) {
         if(type.equals("Moth")){
@@ -49,8 +55,8 @@ public class Formation {
 
             // Extraction des infos (ajuste les index selon tes besoins)
             this.levelName = headerParts[0];             // "Level1"
-            this.cooldownAtt = Double.parseDouble(headerParts[1]); // 0.001
-            this.attaqueMouvement = Integer.parseInt(headerParts[2]);       // -1
+            this.formationSpeed = Double.parseDouble(headerParts[1]); // 0.001
+            this.cooldownAtt = Integer.parseInt(headerParts[2]);       // -1
             this.cooldownTir = Integer.parseInt(headerParts[3]);
             }
             while (scanner.hasNextLine()) {
@@ -109,6 +115,31 @@ public class Formation {
         }
     }
 
+      public void AttaquantDraw(){
+        for(Enemy e : enemiesAtt){
+            e.draw();
+        }
+    }
+
+    public void DrawVieVolee(){
+        for(Enemy e : enemiesAtt){
+            if(e instanceof Moth){
+                Moth m = (Moth) e;
+                if(m.getVieVolee() ==1){
+                    StdDraw.picture(0.95, 0.95, "ressources/sprites/Ship.png", 0.05,0.05);
+                }
+        }
+    }
+    for(Enemy e : enemies){
+            if(e instanceof Moth){
+                Moth m = (Moth) e;
+                if(m.getVieVolee() ==1){
+                    StdDraw.picture(0.95, 0.95, "ressources/sprites/Ship.png", 0.05,0.05);
+                }
+        }
+    }
+}
+
 
     public void gererTirGroupe() {
         long tempsActuel = System.currentTimeMillis();
@@ -118,7 +149,7 @@ public class Formation {
             
             // On cherche un ennemi en bas pour tirer
             for (Enemy e : enemies) {
-                if (e.IsBottom() && Math.random() < 0.2) { // Si estEnBas() a dit OK
+                if (e.IsBottom() && Math.random() < 0.1) { // Si estEnBas() a dit OK
                     
                     // Tirer le missile
                     Projectile m = new Projectile(e.getX(), e.getY(), false);
@@ -137,7 +168,7 @@ public class Formation {
 
     public void updateDeplacement() { // Aider pas IA
        // 1. Faire progresser le décalage
-        offsetX += vitesse * direction;
+        offsetX += this.formationSpeed * direction;
 
         // 2. Inverser la direction si on atteint les bords
         if (Math.abs(offsetX) > limiteSiderale) {
@@ -173,10 +204,65 @@ public class Formation {
         }
     }
 
-    public void update(){
+    public void addEnemyAtt(Enemy e){
+        enemiesAtt.add(e);
+    }
+    public void removeEnemyAtt(Enemy e){
+        enemiesAtt.remove(e);
+    }
+
+    public void gererAttaqueEnnemis(){
+        if(cooldownAtt != -1){
+
+            long tempsActuel = System.currentTimeMillis();
+
+            // On vérifie si le cooldown s'est écoulé depuis la dernière attaque
+            if (tempsActuel - dernierAttTemps >= cooldownAtt) {
+                for (Enemy e : enemies) {
+                    if (e.IsBottom() && Math.random() < 0.05 && e.isEnAttaque() == false) { // Si estEnBas() a dit OK
+                        e.setEnAttaque(true);
+                        enemiesAtt.add(e);
+                        enemies.remove(e);
+                        // On enregistre l'heure de cette attaque pour relancer le cooldown
+                        dernierAttTemps = tempsActuel;
+                        
+                        // On arrête la boucle pour qu'un seul ennemi attaque
+                        return;
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    public void gererFinAttaque(){
+        for(int i = enemiesAtt.size() -1; i>=0; i--){
+            if(!enemiesAtt.get(i).isEnAttaque()){
+                enemies.add(enemiesAtt.get(i));
+                enemiesAtt.remove(i);
+            }
+        }
+    }
+
+    public void updateDeplacementAttaque(Player player){
+        for(Enemy e : enemiesAtt){
+            e.attaqueMouvement(player);
+        }
+    }
+
+
+    public void update(Player player){
         updateDeplacement();
         gererTirGroupe();
         updateTirProjectiles();
+        updateDeplacementAttaque(player);
+        gererAttaqueEnnemis();
+        gererFinAttaque();
+    }
+
+    public ArrayList<Enemy> getEnemiesAtt() {
+        return enemiesAtt;
     }
 }
     
