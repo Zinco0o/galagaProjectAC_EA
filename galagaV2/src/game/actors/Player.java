@@ -38,6 +38,21 @@ public class Player extends Entity{
         }
     }
 
+    public void DrawVie(){
+        if(getLife()==3){
+            StdDraw.picture(0.05, 0.05, "ressources/sprites/Ship.png", 0.05,0.05);
+            StdDraw.picture(0.1, 0.05, "ressources/sprites/Ship.png", 0.05,0.05);
+            StdDraw.picture(0.15, 0.05, "ressources/sprites/Ship.png", 0.05,0.05);
+        }
+        else if(getLife()==2){
+            StdDraw.picture(0.05, 0.05, "ressources/sprites/Ship.png", 0.05,0.05);
+            StdDraw.picture(0.1, 0.05, "ressources/sprites/Ship.png", 0.05,0.05);
+        }
+        else if(getLife()==1){
+            StdDraw.picture(0.05, 0.05, "ressources/sprites/Ship.png", 0.05,0.05);
+        }
+    }
+
     public ArrayList<Projectile> getLstProj(){
         return LstProj;
     }
@@ -100,9 +115,16 @@ public class Player extends Entity{
             
         }
     }
+    public boolean estMort(){
+        return this.life <=0;
+    }
     public void perteVie(){
         this.life -=1;
     }
+    public void gagneVie(){
+        this.life +=1;
+    }
+    
 
     public static void main(String[] args) throws Exception {
         //COMPREHENSION DES FONCTION POUR LINKEDLIST

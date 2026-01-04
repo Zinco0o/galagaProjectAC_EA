@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 public abstract class Enemy extends Entity {
     protected double Xbase;
+    protected double Ybase;
     protected int valeur;
     protected double speed;
     protected Projectile projectile;
     protected Boolean bottom;
     protected Boolean tire;
+    protected boolean EnAttaque;
 
     // Projectile tir
 
@@ -16,6 +18,7 @@ public abstract class Enemy extends Entity {
         super(x, y, length);
         this.valeur = valeur;
         this.Xbase = x;
+        this.Ybase = y;
         this.life = 1;
         this.speed = speed;
         this.tire = false;
@@ -43,6 +46,8 @@ public abstract class Enemy extends Entity {
             }
         }
     }
+
+    public abstract void attaqueMouvement(Player player);
 
    
     public void  update(ArrayList<Enemy> enemies){
@@ -72,6 +77,18 @@ public abstract class Enemy extends Entity {
     }
     public Boolean IsBottom(){
         return bottom;
+    }
+
+    public boolean isEnAttaque() {
+        return EnAttaque;
+    }
+
+    public void setEnAttaque(boolean EnAttaque) {
+        this.EnAttaque = EnAttaque;
+    }
+
+    public double getYBase() {
+        return Ybase;
     }
     
 }
