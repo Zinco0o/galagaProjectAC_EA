@@ -52,6 +52,7 @@ Description de l'interface pour jouer avec votre projet :
     Haut de l'écran : Affichage du score (à gauche) et du Highscore (à droite).
 
     Bas de l'écran : Affichage visuel des vies restantes sous forme de petits sprites de vaisseau.
+                     Affichage Visuel du niveau où vous êtes, grace a des icones dont le nombre indique le niveau                           présent.
 
     Centre : Zone de combat.
 
@@ -61,5 +62,6 @@ Description de l'interface pour jouer avec votre projet :
     Flèche Gauche / Droite : Déplacer le vaisseau.
 
     Barre Espace : Tirer un missile.
+
 
     Barre Espace (Écran de fin) : Relancer une nouvelle partie après un Game Over.
