@@ -16,10 +16,17 @@ public abstract class Entity {
         double dx = this.x - p.getX();
         double dy = this.y - p.getY();
         double distance = Math.sqrt(dx * dx + dy * dy);
-        life--;
         return distance < (this.length + p.getLength()) / 2;
         
     }
+      public Boolean collision(Enemy p){
+        double dx = this.x - p.getX();
+        double dy = this.y - p.getY();
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < (this.length + p.getLength()) / 2;
+        
+    }
+
      public double getX() {
         return x;
      }
